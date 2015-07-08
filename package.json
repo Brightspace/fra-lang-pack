@@ -1,0 +1,28 @@
+{
+  "name": "frau-lang-terms",
+  "version": "0.0.1",
+  "description": "Handle the loading and formatting of JSON language translation packages.",
+  "main": "index.js",
+  "scripts": {
+    "test": "karma start"
+  },
+  "keywords": [
+    "language",
+    "translation",
+    "free-range",
+    "free-range-app-utils",
+    "langterm",
+    "messageformat",
+    "translate"
+  ],
+  "author": "D2L Corporation",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "frau-locale-provider": "^0.1.0",
+    "messageformat": "^0.2.2",
+    "q": "^1.4.1",
+    "requirejs": "^2.1.18",
+    "superagent": "^1.2.0",
+    "superagent-d2l-cors-proxy": "^0.1.0"
+  }
+}
