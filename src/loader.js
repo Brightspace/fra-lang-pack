@@ -176,10 +176,10 @@
 				if( path ) {
 					superagent.get( path )
 						.use( corsProxy )
-						.end( handleLang );
+						.end( handleLoad );
 				} else {
 					console.error( 'Could not load language file' );
-					deferred.reject( err || res.error );
+					deferred.reject( err || new Error( res.error ) );
 				}
 			} else {
 				deferred.resolve( res.body );
