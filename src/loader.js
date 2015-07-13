@@ -10,27 +10,24 @@
 	/**
 	 * Load the lang pack
 	 *
-	 * @param {string} langTag - The lang tag to load everything for (eg: 'fr-US')
-	 * @param {string} languageFileRootUrl - URL to the directory containing the JSON
+	 * @param {object} options - Options
+	 * @param {string} options.langTag - The lang tag to load everything for (eg: 'fr-US')
+	 * @param {string} options.languageFileRootUrl - URL to the directory containing the JSON
 	 *        language files.
-	 * @param {string} [superagentUrl] - URL to fetch Superagent from.
+	 * @param {string} [options.superagentUrl] - URL to fetch Superagent from.
 	 *        If null the NPM package will be used instead.
-	 * @param {string} [localeFileRootUrl] - URL to the directory containing MessageFormat locale
-	 *        files. Optional if being used in Node.
-	 * @param {string} [defaultLangTag=en]    Fall back language if the desired one can't be loaded.
+	 * @param {string} [options.localeFileRootUrl] - URL to the directory containing MessageFormat
+	 *          locale files. Optional if being used in Node.
+	 * @param {string} [options.defaultLangTag=en] - Fall back language if the desired one can't
+	 * be loaded.
 	 * @returns {promise}
 	 */
 	function loadLangPack(
-		langTag,
-		languageFileRootUrl,
-		superagentUrl,
-		localeFileRootUrl,
-		defaultLangTag
+		options
 	) {
-		defaultLangTag = defaultLangTag || 'en';
-
 		var superagent,
-			shortLangTag = langTag.replace( /[_-].*/, '' );
+			defaultLangTag = options.defaultLangTag || 'en',
+			shortLangTag = options.langTag.replace( /[_-].*/, '' );
 
 		return getMessageFormatLocales()
 			.then( getSuperAgent )
@@ -38,13 +35,13 @@
 
 		function getMessageFormatLocales() {
 			return loadMessageFormatLocales(
-				localeFileRootUrl,
+				options.localeFileRootUrl,
 				shortLangTag
 			);
 		}
 
 		function getSuperAgent() {
-			return loadSuperAgent( superagentUrl )
+			return loadSuperAgent( options.superagentUrl )
 				.then( function( sa ) {
 					superagent = sa;
 				} );
@@ -52,10 +49,10 @@
 
 		function getLanguageFile() {
 			return loadLanguageFile(
-				langTag,
+				options.langTag,
 				shortLangTag,
 				defaultLangTag,
-				languageFileRootUrl,
+				options.languageFileRootUrl,
 				superagent
 			);
 		}

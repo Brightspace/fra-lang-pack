@@ -42,13 +42,8 @@ describe( 'Loader', function() {
 	/***** Tests *****/
 
 	it( 'is able to pass sanity check', function( done ) {
-		loader.loadLangPack(
-				options.langTag,
-				options.languageFileRootUrl,
-				options.superagentUrl,
-				options.localeFileRootUrl,
-				options.defaultLangTag
-			).then( function() {
+		loader.loadLangPack( options )
+			.then( function() {
 				done();
 			} );
 	} );
