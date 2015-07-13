@@ -1,7 +1,7 @@
 'use strict';
 (function() {
 
-	var loader = require( 'src/loader' ),
+	var loader = require( './src/loader' ),
 		MessageFormat = require( 'messageformat' );
 
 	/**

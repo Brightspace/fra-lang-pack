@@ -1,9 +1,9 @@
 'use strict';
 (function createLangPackLoader() {
-	var define = require( 'define' ),
-		Q = require( 'q' ),
+	var Q = require( 'q' ),
 		requirejs = require( 'requirejs' ),
-		MessageFormat = require( 'messageformat' );
+		MessageFormat = require( 'messageformat' ),
+		corsProxy = require( 'superagent-d2l-cors-proxy' );
 
 	exports.loadLangPack = loadLangPack;
 
@@ -34,7 +34,7 @@
 
 		return getMessageFormatLocales()
 			.then( getSuperAgent )
-			.then( getLanguageFile() );
+			.then( getLanguageFile );
 
 		function getMessageFormatLocales() {
 			return loadMessageFormatLocales(
@@ -147,9 +147,9 @@
 		superagent
 	) {
 		var deferred = Q.defer();
-
 		var pathsToTry = getPathsToTry();
 		var path = pathsToTry.shift();
+
 		superagent.get( path )
 			.use( corsProxy )
 			.end( handleLoad );
@@ -169,9 +169,7 @@
 				pathsToTry.push( getPath( defaultLangTag ) );
 			}
 
-			function getPath( langTag ) {
-				return languageFileRootUrl + '/' + langTag + '.json';
-			}
+			return pathsToTry;
 		}
 
 		function handleLoad( err, res ) {
@@ -189,6 +187,10 @@
 			} else {
 				deferred.resolve( res.body );
 			}
+		}
+
+		function getPath( langTag ) {
+			return languageFileRootUrl + '/' + langTag + '.json';
 		}
 	}
 })();
