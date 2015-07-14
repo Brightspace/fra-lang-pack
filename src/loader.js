@@ -35,8 +35,8 @@
 
 		function getMessageFormatLocales() {
 			return loadMessageFormatLocales(
-				options.localeFileRootUrl,
-				shortLangTag
+				shortLangTag,
+				options.localeFileRootUrl
 			);
 		}
 

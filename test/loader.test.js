@@ -1,24 +1,31 @@
 'use strict';
 var mockery = require( 'mockery' ),
+	sinon = require( 'sinon' ),
 	superagent = require( 'superagent' ),
 	requirejs = require( 'requirejs' );
 
 require( 'should' );
+require( 'should-sinon' );
 
 describe( 'Loader', function() {
-	var loader;
-
-	var OPTIONS = {};
-
-	var LANG_PACK = {};
+	var loader,
+		definedModules,
+		OPTIONS = {},
+		LANG_PACK = {};
 
 
 	/***** Setup *****/
 
 	before( function() {
+		mockery.enable( {
+			warnOnUnregistered: false
+		} );
+		mockery.registerMock( 'superagent-d2l-cors-proxy', function() {} );
 	} );
 
 	beforeEach( function() {
+		definedModules = [];
+
 		// "Static" data
 		OPTIONS = {
 			langTag: 'fr-CA',
@@ -46,12 +53,7 @@ describe( 'Loader', function() {
 		var config = require( './superagent-mock-config' )( OPTIONS, LANG_PACK );
 		require( 'superagent-mock' )( superagent, config );
 
-		mockery.enable( {
-			warnOnUnregistered: false
-		} );
-		mockery.registerMock( 'superagent-d2l-cors-proxy', function() {} );
-
-		requirejs.define( OPTIONS.superagentUrl, function() {
+		defineRequireJsModule( OPTIONS.superagentUrl, function() {
 			return superagent;
 		} );
 
@@ -60,7 +62,7 @@ describe( 'Loader', function() {
 	} );
 
 
-	/***** Tests *****/
+	/******* Basic Loading Tests *******/
 
 	it( 'is able to pass sanity check', function( done ) {
 		loadLangPack( done, function() {} );
@@ -83,11 +85,91 @@ describe( 'Loader', function() {
 		} );
 	} );
 
+	/******* Superagent Loading Tests *******/
+
+	it( 'loads Superagent using RequireJS when Superagent URL is present', function( done ) {
+		// If the RequireJS version isn't used, using the null require() version will cause errors
+		// and fail the test.
+		mockery.registerMock( 'superagent', null );
+
+		loadLangPack( done, function( langPack ) {
+			langPack.should.not.be.null();
+			mockery.deregisterMock( 'superagent' );
+		} );
+	} );
+
+	it( 'loads Superagent using require() when Superagent URL is not present', function( done ) {
+		// Similar to above, undefining the RequireJS module will cause errors to be thrown if the
+		// loader attempts to use it.
+		requirejs.undef( OPTIONS.superagentUrl );
+		delete OPTIONS.superagentUrl;
+
+		loadLangPack( done, function( langPack ) {
+			langPack.should.not.be.null();
+		} );
+	} );
+
+	/******* MessageFormat Locale File Tests *******/
+
+	it( 'loads MessageFormat locale files from URL when running in a browser', function( done ) {
+		global.window = {}; // Make the loader think we're running in a browser
+		var requireSpy = sinon.spy();
+		var localeFileUrl = OPTIONS.localeFileRootUrl + '/' + OPTIONS.shortLangTag + '.js';
+		defineRequireJsModule( localeFileUrl, requireSpy );
+
+		loadLangPack( done, function( langPack ) {
+			langPack.should.not.be.null();
+			requireSpy.should.be.called();
+
+			requireSpy.called.should.be.true(
+				"RequireJS should have been used to load MessageFormat locale file from "
+				+ localeFileUrl
+			);
+		} );
+	} );
+
+	it( 'errors if no MessageFormat locale URL when running in a browser', function( done ) {
+		global.window = {}; // Make the loader think we're running in a browser
+		delete OPTIONS.localeFileRootUrl;
+
+		loader.loadLangPack( OPTIONS )
+			.then(
+				function success() {
+					var error = new Error( "Expected an error to have occurred" );
+					done( error );
+				},
+				function onError() {
+					done();
+				}
+			);
+	} );
+
+	it( 'does not load MessageFormat locale files when running in node', function( done ) {
+		delete global.window; // Make the loader think we're running in node
+		var requireSpy = sinon.spy();
+		var localeFileUrl = OPTIONS.localeFileRootUrl + '/' + OPTIONS.shortLangTag + '.js';
+		var defaultFileUrl = OPTIONS.localeFileRootUrl + '/' + OPTIONS.defaultLangTag + '.js';
+		defineRequireJsModule( localeFileUrl, requireSpy );
+		defineRequireJsModule( defaultFileUrl, requireSpy );
+
+		loadLangPack( done, function( langPack ) {
+			langPack.should.not.be.null();
+			requireSpy.should.not.be.called();
+		} );
+	} );
+
 
 	/***** Teardown *****/
 
 	afterEach( function() {
-		mockery.deregisterMock( 'superagent-d2l-cors-proxy' );
+		delete global.window;
+		for( var i in definedModules ) {
+			requirejs.undef( definedModules[i] );
+		}
+	} );
+
+	after( function() {
+		mockery.deregisterAll();
 		mockery.disable();
 	} );
 
@@ -107,6 +189,11 @@ describe( 'Loader', function() {
 			).catch( function( err ) {
 				done( err || new Error( "Error occurred during promise handling" ) );
 			} );
+	}
+
+	function defineRequireJsModule( moduleName, func ) {
+		requirejs.define( moduleName, func );
+		definedModules.push( moduleName );
 	}
 
 } );
