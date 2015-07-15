@@ -18,8 +18,6 @@ function generateConfig( options, langPack ) {
 		 * @param params object sent by 'send' function
 		 */
 		fixtures: function( match, params ) {
-			console.info( "Superagent called to load language file: ", match[0] );
-
 			var langCode = match[1];
 
 			return langPack[langCode];

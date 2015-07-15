@@ -17,9 +17,9 @@
 	 * @param {string} [options.superagentUrl] - URL to fetch Superagent from.
 	 *        If null the NPM package will be used instead.
 	 * @param {string} [options.localeFileRootUrl] - URL to the directory containing MessageFormat
-	 *          locale files. Optional if being used in Node.
+	 *        locale files. Optional if being used in Node.
 	 * @param {string} [options.defaultLangTag=en] - Fall back language if the desired one can't
-	 * be loaded.
+	 *        be loaded.
 	 * @returns {promise}
 	 */
 	function loadLangPack(
