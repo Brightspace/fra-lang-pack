@@ -6,6 +6,7 @@
 		corsProxy = require( 'superagent-d2l-cors-proxy' );
 
 	exports.loadLangPack = loadLangPack;
+	exports.loadLocale = loadMessageFormatLocales;
 
 	/**
 	 * Load the lang pack

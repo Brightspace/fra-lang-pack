@@ -4,81 +4,40 @@ var mockery = require( 'mockery' ),
 
 require( 'should' );
 
-describe( 'LangPackLoader', function() {
+describe( 'Module Index', function() {
 
-	var langPackLoader,
-		OPTIONS,
-		LANG_PACK;;
+	var loader = {
+			loadLangPack: "This is a loader that is a string for comparisons",
+			loadLocale: "This is a loader for loading locale files"
+		},
+		formatter = "This is a formatter that is also being used for comparisons",
+		module;
 
 	before( function() {
 		mockery.enable( {
 			warnOnUnregistered: false
 		} );
 		mockery.registerMock( './src/loader', loader );
+		mockery.registerMock( './src/formatter', formatter );
+
+		module = require( '../index' );
 	} );
 
-	beforeEach( function() {
-		// "Static" data
-		OPTIONS = {
-			langTag: 'fr-CA',
-			shortLangTag: 'fr',
-			defaultLangTag: 'en'
-		};
-
-		LANG_PACK = {
-			'en': {
-				greeting: {
-					'hello': 'Hello in English'
-				}
-			},
-			'fr-CA': {
-				greeting: {
-					'hello': 'Bonjour!'
-				}
-			}
-		};
-
-		// Create the loader
-		var LangPackLoader = require( '../index' );
-		langPackLoader = new LangPackLoader( OPTIONS );
+	it( 'exports loadLangPack() as expected', function() {
+		module.loadLangPack.should.equal( loader.loadLangPack );
 	} );
 
-	it( 'is able to pass sanity test', function( done ) {
-		langPackLoader.loadLangPack()
-			.then( function( langPack ) {
-				langPack.should.not.be.null()
-					.and.equal( LANG_PACK[OPTIONS.langTag] );
-
-				langPackLoader.LangPack.should.equal( langPack );
-
-				done();
-			} ).catch( function( err ) {
-				done( err );
-			} );
+	it( 'exports loadLocale() as expected', function() {
+		module.loadLocale.should.equal( loader.loadLocale );
 	} );
 
-
+	it( 'exports Formatter() as expected', function() {
+		module.Formatter.should.equal( formatter );
+	} );
 
 	after( function() {
 		mockery.deregisterAll();
 		mockery.disable();
 	} );
 
-	/***** Mocks *****/
-	var loader = {
-		loadLangPack: function( options ) {
-			var deferred = Q.defer();
-
-			var pack = LANG_PACK[OPTIONS.langTag]
-				|| LANG_PACK[OPTIONS.shortLangTag]
-				|| LANG_PACK[OPTIONS.defaultLangTag];
-			if( pack ) {
-				deferred.resolve( pack );
-			} else {
-				deferred.reject( 'Could not locate lang pack' );
-			}
-
-			return deferred.promise;
-		}
-	};
 } );
