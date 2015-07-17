@@ -5,6 +5,12 @@
 	module.exports = Formatter;
 
 	/**
+	 * Perform placeholder replacements in strings following the
+	 * [ICU string formatting standard]{@link http://userguide.icu-project.org/formatparse/messages}.
+	 *
+	 * Uses MessageFormat in the background, and requires that the appropriate locale files have
+	 * are available. This can be accomplished by using this in NodeJS, or by loading them using
+	 * {@link loadLocale}
 	 *
 	 * @param {string} [langTag='en'] The language code to use
 	 * @constructor

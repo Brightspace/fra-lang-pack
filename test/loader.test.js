@@ -158,6 +158,18 @@ describe( 'Loader', function() {
 		} );
 	} );
 
+	it( 'assigns MessageFormat to window object for locale files to use', function( done ) {
+		global.window = {};
+		var MessageFormat = require( 'messageformat' );
+		var localeFileUrl = OPTIONS.localeFileRootUrl + '/' + OPTIONS.shortLangTag + '.js';
+		defineRequireJsModule( localeFileUrl );
+
+		loadLangPack( done, function() {
+			global.window.MessageFormat.should.not.be.null()
+				.and.equal( MessageFormat );
+		} );
+	} );
+
 
 	/***** Teardown *****/
 
