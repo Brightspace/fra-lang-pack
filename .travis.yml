@@ -1,6 +1,6 @@
-language: javascript
+language: node_js
 node_js:
 - '0.10'
 sudo: false
 script:
-- mocha test -R nyan
+- npm run test
