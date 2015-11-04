@@ -1,6 +1,6 @@
 {
   "name": "fra-lang-pack",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Handle the loading and formatting of JSON language translation packages.",
   "main": "index.js",
   "scripts": {
@@ -30,7 +30,7 @@
     "should-sinon": "0.0.3",
     "sinon": "^1.15.4",
     "superagent": "^1.2.0",
-    "superagent-d2l-cors-proxy": "^0.1.0",
+    "superagent-d2l-cors-proxy": "^0.2.0",
     "superagent-mock": "^1.3.0"
   },
   "browserify": {
