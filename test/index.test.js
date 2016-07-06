@@ -1,6 +1,5 @@
 'use strict';
-var mockery = require( 'mockery' ),
-	Q = require( 'q' );
+var mockery = require( 'mockery' );
 
 require( 'should' );
 

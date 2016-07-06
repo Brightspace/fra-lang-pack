@@ -24,7 +24,6 @@
     "messageformat": "^0.2.2",
     "mocha": "^2.2.5",
     "mockery": "^1.4.0",
-    "q": "^1.4.1",
     "requirejs": "^2.1.18",
     "should": "^7.0.1",
     "should-sinon": "0.0.3",
@@ -40,5 +39,8 @@
   },
   "browserify-shim": {
     "requirejs": "global:requirejs"
+  },
+  "dependencies": {
+    "lie": "^3.0.4"
   }
 }

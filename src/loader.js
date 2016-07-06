@@ -1,6 +1,6 @@
 'use strict';
 (function createLangPackLoader() {
-	var Q = require( 'q' ),
+	var Promise = require( 'lie' ),
 		requirejs = require( 'requirejs' ),
 		MessageFormat = require( 'messageformat' ),
 		corsProxy = require( 'superagent-d2l-cors-proxy' );
@@ -63,68 +63,65 @@
 	 * Load superagent, if possible from an external resource
 	 * @param {string} superagentUrl - URL to fetch Superagent from.
 	 *        If null, use the NPM package.
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	function loadSuperAgent(
 		superagentUrl
 	) {
-		var deferred = Q.defer();
-
-		if( superagentUrl ) {
-			requirejs(
-				[superagentUrl],
-				function superagentLoadSuccess( superagent ) {
-					deferred.resolve( superagent );
-				},
-				function superagentLoadError( err ) {
-					deferred.reject( err );
-				}
-			);
-		} else {
-			var superagent = require( 'superagent' );
-			deferred.resolve( superagent );
-		}
-
-		return deferred.promise;
+		return new Promise( function( resolve, reject ) {
+			if( superagentUrl ) {
+				requirejs(
+					[superagentUrl],
+					function superagentLoadSuccess( superagent ) {
+						resolve( superagent );
+					},
+					function superagentLoadError( err ) {
+						reject( err );
+					}
+				);
+			} else {
+				var superagent = require( 'superagent' );
+				resolve( superagent );
+			}
+		} );
 	}
 
 	/**
 	 * Load the required locale file for MessageFormat
 	 * @param {string} shortLangTag - Short-form of the lang tag (eg: 'en')
 	 * @param {string} localeFileRootUrl - URL to the directory containing the locale files
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	function loadMessageFormatLocales(
 		shortLangTag,
 		localeFileRootUrl
 	) {
-		var deferred = Q.defer(),
-			isNode = ( typeof window === 'undefined' );
+		return new Promise( function( resolve, reject ) {
+			var isNode = ( typeof window === 'undefined' );
 
-		if( isNode ) {
-			// MessageFormat can load them itself if running in node
-			deferred.resolve();
-		} else if( !localeFileRootUrl ) {
-			deferred.reject(
-				'Must specify a root directory for MessageFormat locale ' +
-				'files if running in a browser'
-			);
-		} else {
-			window.MessageFormat = MessageFormat; // required for locale files to operate on
+			if( isNode ) {
+				// MessageFormat can load them itself if running in node
+				resolve();
+			} else if( !localeFileRootUrl ) {
+				reject(
+					'Must specify a root directory for MessageFormat locale ' +
+					'files if running in a browser'
+				);
+			} else {
+				window.MessageFormat = MessageFormat; // required for locale files to operate on
 
-			var path = localeFileRootUrl + '/' + shortLangTag + '.js';
-			requirejs(
-				[path],
-				function localeFileLoadSuccess() {
-					deferred.resolve();
-				},
-				function localeFileLoadError( err ) {
-					deferred.reject( err );
-				}
-			)
-		}
-
-		return deferred.promise;
+				var path = localeFileRootUrl + '/' + shortLangTag + '.js';
+				requirejs(
+					[path],
+					function localeFileLoadSuccess() {
+						resolve();
+					},
+					function localeFileLoadError( err ) {
+						reject( err );
+					}
+				)
+			}
+		} );
 	}
 
 	/**
@@ -144,15 +141,32 @@
 		languageFileRootUrl,
 		superagent
 	) {
-		var deferred = Q.defer();
-		var pathsToTry = getPathsToTry();
-		var path = pathsToTry.shift();
+		return new Promise( function( resolve, reject ) {
+			var pathsToTry = getPathsToTry();
+			var path = pathsToTry.shift();
 
-		superagent.get( path )
-			.use( corsProxy )
-			.end( handleLoad );
+			superagent.get( path )
+				.use( corsProxy )
+				.end( handleLoad );
 
-		return deferred.promise;
+
+			function handleLoad( err, res ) {
+				if( err || !res.ok ) {
+					var path = pathsToTry.shift();
+
+					if( path ) {
+						superagent.get( path )
+							.use( corsProxy )
+							.end( handleLoad );
+					} else {
+						console.error( 'Could not load language file' );
+						reject( err || new Error( res.error ) );
+					}
+				} else {
+					resolve( res.body );
+				}
+			}
+		} );
 
 		function getPathsToTry() {
 			var pathsToTry = [
@@ -168,23 +182,6 @@
 			}
 
 			return pathsToTry;
-		}
-
-		function handleLoad( err, res ) {
-			if( err || !res.ok ) {
-				var path = pathsToTry.shift();
-
-				if( path ) {
-					superagent.get( path )
-						.use( corsProxy )
-						.end( handleLoad );
-				} else {
-					console.error( 'Could not load language file' );
-					deferred.reject( err || new Error( res.error ) );
-				}
-			} else {
-				deferred.resolve( res.body );
-			}
 		}
 
 		function getPath( langTag ) {
