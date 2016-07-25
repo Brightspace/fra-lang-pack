@@ -101,6 +101,7 @@ describe( 'Loader', function() {
 		// Similar to above, undefining the RequireJS module will cause errors to be thrown if the
 		// loader attempts to use it.
 		requirejs.undef( OPTIONS.superagentUrl );
+		requirejs.undef( 'superagent' );
 		delete OPTIONS.superagentUrl;
 
 		loadLangPack( done, function( langPack ) {

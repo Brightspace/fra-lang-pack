@@ -45,6 +45,12 @@ before giving up. Assuming you specified a lang tag of `fr-CA`, it would work li
 | **superagentUrl**       | yes        | URL to fetch Superagent from. If null the NPM package will be used instead.                                |
 | **defaultLangTag**      | no         | Fall-back language if the desired one can't be loaded **(defaults to `en`)**                               |
 
+### Superagent
+
+This library depends on SuperAgent (tested with `^1.2.0` and `^2.0.0`), but to keep the bundle size down it does not
+include it directly. You are **required** to either pass the `superagentUrl` option, or someone make it available to
+RequireJS with the name `superagent`.
+
 ## Formatter
 
 The Formatter is a wrapper around MessageFormat, with the [Language File Loader](#language-file-loader)

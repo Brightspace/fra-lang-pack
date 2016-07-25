@@ -59,20 +59,17 @@
 		superagentUrl
 	) {
 		return new Promise( function( resolve, reject ) {
-			if( superagentUrl ) {
-				requirejs(
-					[superagentUrl],
-					function superagentLoadSuccess( superagent ) {
-						resolve( superagent );
-					},
-					function superagentLoadError( err ) {
-						reject( err );
-					}
-				);
-			} else {
-				var superagent = require( 'superagent' );
-				resolve( superagent );
-			}
+			var dependency = superagentUrl ? [superagentUrl] : ['superagent'];
+
+			requirejs(
+				dependency,
+				function superagentLoadSuccess( superagent ) {
+					resolve( superagent );
+				},
+				function superagentLoadError( err ) {
+					reject( err );
+				}
+			);
 		} );
 	}
 
