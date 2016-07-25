@@ -1,8 +1,7 @@
 'use strict';
 (function createLangPackLoader() {
 	var Promise = require( 'lie' ),
-		requirejs = require( 'requirejs' ),
-		corsProxy = require( 'superagent-d2l-cors-proxy' );
+		requirejs = require( 'requirejs' );
 
 	exports.loadLangPack = loadLangPack;
 
@@ -95,7 +94,6 @@
 			var path = pathsToTry.shift();
 
 			superagent.get( path )
-				.use( corsProxy )
 				.end( handleLoad );
 
 
@@ -105,7 +103,6 @@
 
 					if( path ) {
 						superagent.get( path )
-							.use( corsProxy )
 							.end( handleLoad );
 					} else {
 						console.error( 'Could not load language file' );

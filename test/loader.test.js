@@ -20,7 +20,6 @@ describe( 'Loader', function() {
 		mockery.enable( {
 			warnOnUnregistered: false
 		} );
-		mockery.registerMock( 'superagent-d2l-cors-proxy', function() {} );
 	} );
 
 	beforeEach( function() {
