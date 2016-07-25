@@ -2,11 +2,9 @@
 (function createLangPackLoader() {
 	var Promise = require( 'lie' ),
 		requirejs = require( 'requirejs' ),
-		MessageFormat = require( 'messageformat' ),
 		corsProxy = require( 'superagent-d2l-cors-proxy' );
 
 	exports.loadLangPack = loadLangPack;
-	exports.loadLocale = loadMessageFormatLocales;
 
 	/**
 	 * Load the lang pack
@@ -30,16 +28,8 @@
 			defaultLangTag = options.defaultLangTag || 'en',
 			shortLangTag = options.langTag.replace( /[_-].*/, '' );
 
-		return getMessageFormatLocales()
-			.then( getSuperAgent )
+		return getSuperAgent()
 			.then( getLanguageFile );
-
-		function getMessageFormatLocales() {
-			return loadMessageFormatLocales(
-				shortLangTag,
-				options.localeFileRootUrl
-			);
-		}
 
 		function getSuperAgent() {
 			return loadSuperAgent( options.superagentUrl )
@@ -82,44 +72,6 @@
 			} else {
 				var superagent = require( 'superagent' );
 				resolve( superagent );
-			}
-		} );
-	}
-
-	/**
-	 * Load the required locale file for MessageFormat
-	 * @param {string} shortLangTag - Short-form of the lang tag (eg: 'en')
-	 * @param {string} localeFileRootUrl - URL to the directory containing the locale files
-	 * @returns {Promise}
-	 */
-	function loadMessageFormatLocales(
-		shortLangTag,
-		localeFileRootUrl
-	) {
-		return new Promise( function( resolve, reject ) {
-			var isNode = ( typeof window === 'undefined' );
-
-			if( isNode ) {
-				// MessageFormat can load them itself if running in node
-				resolve();
-			} else if( !localeFileRootUrl ) {
-				reject(
-					'Must specify a root directory for MessageFormat locale ' +
-					'files if running in a browser'
-				);
-			} else {
-				window.MessageFormat = MessageFormat; // required for locale files to operate on
-
-				var path = localeFileRootUrl + '/' + shortLangTag + '.js';
-				requirejs(
-					[path],
-					function localeFileLoadSuccess() {
-						resolve();
-					},
-					function localeFileLoadError( err ) {
-						reject( err );
-					}
-				)
 			}
 		} );
 	}

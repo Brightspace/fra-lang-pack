@@ -32,8 +32,7 @@ describe( 'Loader', function() {
 			shortLangTag: 'fr',
 			defaultLangTag: 'en',
 			languageFileRootUrl: 'https://example.com/lang/root',
-			superagentUrl: 'https://example.com/lib/superagent.js',
-			localeFileRootUrl: 'https://example.com/lang/messageformat'
+			superagentUrl: 'https://example.com/lib/superagent.js'
 		};
 
 		LANG_PACK = {
@@ -108,68 +107,6 @@ describe( 'Loader', function() {
 			langPack.should.not.be.null();
 		} );
 	} );
-
-	/******* MessageFormat Locale File Tests *******/
-
-	it( 'loads MessageFormat locale files from URL when running in a browser', function( done ) {
-		global.window = {}; // Make the loader think we're running in a browser
-		var requireSpy = sinon.spy();
-		var localeFileUrl = OPTIONS.localeFileRootUrl + '/' + OPTIONS.shortLangTag + '.js';
-		defineRequireJsModule( localeFileUrl, requireSpy );
-
-		loadLangPack( done, function( langPack ) {
-			langPack.should.not.be.null();
-			requireSpy.should.be.called();
-
-			requireSpy.called.should.be.true(
-				"RequireJS should have been used to load MessageFormat locale file from "
-				+ localeFileUrl
-			);
-		} );
-	} );
-
-	it( 'errors if no MessageFormat locale URL when running in a browser', function( done ) {
-		global.window = {}; // Make the loader think we're running in a browser
-		delete OPTIONS.localeFileRootUrl;
-
-		loader.loadLangPack( OPTIONS )
-			.then(
-				function success() {
-					var error = new Error( "Expected an error to have occurred" );
-					done( error );
-				},
-				function onError() {
-					done();
-				}
-			);
-	} );
-
-	it( 'does not load MessageFormat locale files when running in node', function( done ) {
-		delete global.window; // Make the loader think we're running in node
-		var requireSpy = sinon.spy();
-		var localeFileUrl = OPTIONS.localeFileRootUrl + '/' + OPTIONS.shortLangTag + '.js';
-		var defaultFileUrl = OPTIONS.localeFileRootUrl + '/' + OPTIONS.defaultLangTag + '.js';
-		defineRequireJsModule( localeFileUrl, requireSpy );
-		defineRequireJsModule( defaultFileUrl, requireSpy );
-
-		loadLangPack( done, function( langPack ) {
-			langPack.should.not.be.null();
-			requireSpy.should.not.be.called();
-		} );
-	} );
-
-	it( 'assigns MessageFormat to window object for locale files to use', function( done ) {
-		global.window = {};
-		var MessageFormat = require( 'messageformat' );
-		var localeFileUrl = OPTIONS.localeFileRootUrl + '/' + OPTIONS.shortLangTag + '.js';
-		defineRequireJsModule( localeFileUrl );
-
-		loadLangPack( done, function() {
-			global.window.MessageFormat.should.not.be.null()
-				.and.equal( MessageFormat );
-		} );
-	} );
-
 
 	/***** Teardown *****/
 
