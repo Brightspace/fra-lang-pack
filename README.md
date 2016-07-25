@@ -1,5 +1,7 @@
 # Free-Range App Langpack Loader
 
+[![Build Status](https://travis-ci.org/Brightspace/fra-lang-pack.svg?branch=master)](https://travis-ci.org/Brightspace/fra-lang-pack)
+
 This is a project to help you with two things when developing a Free-Range App:
 
 - Aid in loading language files, returning promises so you can delay loading the rest of your app
