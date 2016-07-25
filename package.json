@@ -1,6 +1,6 @@
 {
   "name": "fra-lang-pack",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Handle the loading and formatting of JSON language translation packages.",
   "main": "index.js",
   "scripts": {
