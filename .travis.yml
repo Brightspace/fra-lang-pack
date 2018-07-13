@@ -1,13 +1,13 @@
 language: node_js
 node_js:
-- 6
+  - 6
 sudo: false
 script:
-- npm run test
+  - npm run test
 deploy:
-  provider: npm
-  email: d2ltravisdeploy@d2l.com
-  api_key:
-    secure: U7lXk0ih/gnW9iqSKO/XIGthIoHlJ40YIsheyfp/EeQRyYBUTR4PuN8KvWX73tz1JjUQ5DCY21ghb0H2t97o8SCZYhDwuC+p2s1bVs12E8PUrSFpkpp/KXZ0KYpwmYiHJXtHex7sGBTPKE3UbmqtTyu6S6hsrlgOKTYr3oc7By/yFQJaL2z/ImR3Byx65nhBEU2CB0BowB60+YDDT62h2dxo8yn0RIAZTHTkSfj6gBiAFO1FGlV9eX0p4CKlLURS3/Px+qoIUTxrLAuwjoHr+03Zoe7S6MWg7hRKBXqkcGuqsktW9q8EMa1WG1MBAHonvWPwdzXWj0sTi3sxM1PVt9m6n1Dji2knE/qa3K8X6B+Hwh9vp0sLuoTnHoNpg1Fx94LBmoMY7IXhENjrdUUtv2rWxzO7SYboVSiMUCrf43fxG+Dy9MFgFs3ZNxIGjINmXdVLGooZVwjoKC//sf0Ef+/IOfnmabT/KtImfWlJfEOfCXOVoRpynEl+ZIS9NQ/WvfjND1r1IcGjdwcu3eiXyJe8eR7WphGKtfpZHCH0vnfur347vcY3Qvf9jiu0eAbr11zKtYwBi9+M4be7w/41aqFSqzSQQA4MjnLahj2rmx8DDuRWWSoeKMvfsvjcku35KFHFHBawWKRtrtc9GLICIHK0WuNcc/7m/LKDu0hIYGU=
+  provider: script
+  script: echo "npm credentials were revoked on 2018-07-12. We regenerated many
+    credentials, but this repository had no changes in at least 18 months and
+    was skipped. Reconfigure npm deployments. -omsmith"; exit 1
   on:
     tags: true
